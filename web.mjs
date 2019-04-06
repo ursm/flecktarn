@@ -74,7 +74,5 @@ async function getJSONFromCache(cache, key) {
 
   if (!buf) { return null }
 
-  const str = buf.toString()
-
-  return str.length === 0 ? null : JSON.parse(str)
+  return JSON.parse(buf.toString())
 }
