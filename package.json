@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "base64url": "^3.0.1",
     "express": "^4.16.4",
     "memjs": "^1.2.0",
     "node-fetch": "^2.3.0"

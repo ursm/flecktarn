@@ -1,3 +1,4 @@
+import base64url from 'base64url'
 import crypto from 'crypto'
 import express from 'express'
 import fetch from 'node-fetch'
@@ -6,10 +7,10 @@ import memjs from 'memjs'
 const app   = express()
 const cache = memjs.Client.create()
 
-app.get('/images/:digest/:url', async (req, res) => {
-  const {digest, url} = req.params
+app.get('/images/:signature/:url', async (req, res) => {
+  const {signature, url} = req.params
 
-  if (digest !== hmac(url)) {
+  if (signature !== sign(url)) {
     res.sendStatus(400)
     return
   }
@@ -60,10 +61,10 @@ app.get('/images/:digest/:url', async (req, res) => {
 
 app.listen(process.env.PORT || 3000)
 
-function hmac(url) {
+function sign(url) {
   const hash = crypto.createHmac('sha224', process.env.HMAC_SECRET)
   hash.update(url)
-  return hash.digest('hex')
+  return base64url(hash.digest())
 }
 
 function md5(url) {
