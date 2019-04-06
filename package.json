@@ -1,0 +1,12 @@
+{
+  "name": "flecktarn",
+  "version": "0.0.0",
+  "author": "Keita Urashima <ursm@ursm.jp>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.16.4",
+    "memjs": "^1.2.0",
+    "node-fetch": "^2.3.0"
+  }
+}
