@@ -44,7 +44,9 @@ app.get('/images/:signature/:url', async (req, res) => {
     return
   }
 
-  const newHeaders = getHeaders(r.headers, 'Content-Type', 'Last-Modified', 'ETag')
+  const newHeaders = ['Content-Type', 'Last-Modified', 'ETag'].reduce((acc, key) => (
+    r.headers.has(key) ? {...acc, [key]: r.headers.get(key)} : acc
+  ), {})
 
   const [body1, body2] = await Promise.all([
     r.clone().buffer(),
@@ -63,6 +65,7 @@ app.listen(process.env.PORT || 3000)
 
 function verify(url, signature) {
   const digest = crypto.createHmac('sha224', process.env.HMAC_SECRET).update(url).digest('utf8')
+
   return digest === base64url.decode(signature)
 }
 
@@ -74,10 +77,4 @@ async function getJSONFromCache(cache, key) {
   const str = buf.toString()
 
   return str.length === 0 ? null : JSON.parse(str)
-}
-
-function getHeaders(headers, ...keys) {
-  return keys.reduce((acc, key) => (
-    headers.has(key) ? {...acc, [key]: headers.get(key)} : acc
-  ), {})
 }
