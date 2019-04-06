@@ -61,7 +61,7 @@ app.get('/images/:digest/:url', async (req, res) => {
 app.listen(process.env.PORT || 3000)
 
 function hmac(url) {
-  const hash = crypto.createHmac('sha256', process.env.HMAC_SECRET)
+  const hash = crypto.createHmac('sha224', process.env.HMAC_SECRET)
   hash.update(url)
   return hash.digest('hex')
 }
