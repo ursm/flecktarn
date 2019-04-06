@@ -36,7 +36,7 @@ app.get('/images/:signature/:url', async (req, res) => {
     }
   }
 
-  const r = await fetch(req.params.url)
+  const r = await fetch(url)
 
   if (!r.ok) {
     console.error(r)
