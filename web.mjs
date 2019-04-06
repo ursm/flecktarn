@@ -85,8 +85,7 @@ async function getJSONFromCache(cache, key) {
 }
 
 function getHeaders(headers, ...keys) {
-  return keys.reduce((obj, key) => {
-    const val = headers.get(key)
-    return val ? Object.assign(obj, {[key]: val}) : obj
-  }, {})
+  return keys.reduce((acc, key) => (
+    headers.has(key) ? {...acc, [key]: headers.get(key)} : acc
+  ), {})
 }
