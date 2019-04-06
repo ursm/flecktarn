@@ -8,14 +8,14 @@ const app   = express()
 const cache = memjs.Client.create()
 
 app.get('/images/:signature/:url', async (req, res) => {
-  const {signature, url} = req.params
+  const {url, signature} = req.params
 
-  if (signature !== sign(url)) {
+  if (!verify(url, signature)) {
     res.sendStatus(400)
     return
   }
 
-  const key     = md5(req.params.url)
+  const key     = crypto.createHash('md5').update(url).digest('hex')
   const headers = await getJSONFromCache(cache, `${key}:headers`)
 
   if (headers) {
@@ -61,16 +61,9 @@ app.get('/images/:signature/:url', async (req, res) => {
 
 app.listen(process.env.PORT || 3000)
 
-function sign(url) {
-  const hash = crypto.createHmac('sha224', process.env.HMAC_SECRET)
-  hash.update(url)
-  return base64url(hash.digest())
-}
-
-function md5(url) {
-  const hash = crypto.createHash('md5')
-  hash.update(url)
-  return hash.digest('hex')
+function verify(url, signature) {
+  const digest = crypto.createHmac('sha224', process.env.HMAC_SECRET).update(url).digest('utf8')
+  return digest === base64url.decode(signature)
 }
 
 async function getJSONFromCache(cache, key) {
@@ -78,11 +71,9 @@ async function getJSONFromCache(cache, key) {
 
   if (!buf) { return null }
 
-  const json = buf.toString()
+  const str = buf.toString()
 
-  if (json.length === 0) { return null }
-
-  return JSON.parse(json)
+  return str.length === 0 ? null : JSON.parse(str)
 }
 
 function getHeaders(headers, ...keys) {
