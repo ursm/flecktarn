@@ -24,7 +24,7 @@ app.use(logger('dev', {
   }
 }))
 
-app.get('/images/:signature/:url', async (req, res) => {
+app.get('/:signature/:url', async (req, res) => {
   const {url, signature} = req.params
 
   if (createSignature(url, app.get('hmac secret')) !== signature) {

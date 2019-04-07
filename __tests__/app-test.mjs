@@ -13,7 +13,7 @@ jest.mock('node-fetch')
 
 app.set('hmac secret', 'SECRET')
 
-describe('GET /images/:signature/:url', () => {
+describe('GET /:signature/:url', () => {
   async function get(url, opts = {}) {
     let req = request(app).get(url)
 
@@ -28,7 +28,7 @@ describe('GET /images/:signature/:url', () => {
 
   const imageUrl  = 'http://example.com/foo.png'
   const signature = createSignature(imageUrl, 'SECRET')
-  const url       = `/images/${signature}/${querystring.escape(imageUrl)}`
+  const url       = `/${signature}/${querystring.escape(imageUrl)}`
 
   beforeEach(() => {
     fetch.mockReset()
@@ -97,7 +97,7 @@ describe('GET /images/:signature/:url', () => {
   })
 
   test('signature is invalid', async () => {
-    const res = await get(`/images/INVALID/${querystring.escape(imageUrl)}`)
+    const res = await get(`/INVALID/${querystring.escape(imageUrl)}`)
 
     expect(res.statusCode).toBe(400)
     expect(fetch).not.toHaveBeenCalled()
