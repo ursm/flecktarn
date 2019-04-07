@@ -1,9 +1,10 @@
+import crypto from 'crypto'
 import express from 'express'
 import fetch from 'node-fetch'
 import logger from 'morgan'
 import memjs from 'memjs'
 
-import { createSignature, createCacheKey } from './util'
+import { createSignature } from './util'
 
 const _status = logger.status
 
@@ -31,7 +32,7 @@ app.get('/images/:signature/:url', async (req, res) => {
     return
   }
 
-  const key     = createCacheKey(url)
+  const key     = crypto.createHash('md5').update(url).digest('base64')
   const headers = await getJSONFromCache(cache, `${key}:headers`)
 
   if (headers) {
