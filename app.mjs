@@ -1,11 +1,23 @@
 import express from 'express'
 import fetch from 'node-fetch'
+import logger from 'morgan'
 import memjs from 'memjs'
 
 import { createSignature, createCacheKey } from './util'
 
+const _status = logger.status
+
+logger.token('status', (req, res) => {
+  const status = _status(req, res)
+  const cache  = res.get('x-cache')
+
+  return cache ? `${status} ${cache}` : status
+})
+
 const app   = express()
 const cache = memjs.Client.create()
+
+app.use(logger('dev'))
 
 app.get('/images/:signature/:url', async (req, res) => {
   const {url, signature} = req.params
@@ -24,14 +36,14 @@ app.get('/images/:signature/:url', async (req, res) => {
     }
 
     if (req.fresh) {
-      res.sendStatus(304)
+      res.set('X-Cache', 'hit').sendStatus(304)
       return
     }
 
     const {value: body} = await cache.get(`${key}:body`)
 
     if (body) {
-      res.status(200).set(headers).send(body)
+      res.status(200).set('X-Cache', 'hit').set(headers).send(body)
       return
     }
   }
@@ -58,7 +70,7 @@ app.get('/images/:signature/:url', async (req, res) => {
     cache.set(`${key}:body`, body1, {})
   ])
 
-  res.status(r.status).set(newHeaders).send(body2)
+  res.status(r.status).set('X-Cache', 'miss').set(newHeaders).send(body2)
 })
 
 export default app
