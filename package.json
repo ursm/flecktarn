@@ -4,10 +4,21 @@
   "author": "Keita Urashima <ursm@ursm.jp>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "base64url": "^3.0.1",
     "express": "^4.16.4",
     "memjs": "^1.2.0",
     "node-fetch": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-transform-modules-commonjs": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "babel-jest": "^24.7.1",
+    "jest": "^24.7.1",
+    "supertest": "^4.0.2"
   }
 }

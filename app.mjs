@@ -1,8 +1,8 @@
-import base64url from 'base64url'
-import crypto from 'crypto'
 import express from 'express'
 import fetch from 'node-fetch'
 import memjs from 'memjs'
+
+import { createSignature, createCacheKey } from './util'
 
 const app   = express()
 const cache = memjs.Client.create()
@@ -10,12 +10,12 @@ const cache = memjs.Client.create()
 app.get('/images/:signature/:url', async (req, res) => {
   const {url, signature} = req.params
 
-  if (!verify(url, signature)) {
+  if (createSignature(url, app.get('hmac secret')) !== signature) {
     res.sendStatus(400)
     return
   }
 
-  const key     = crypto.createHash('md5').update(url).digest('hex')
+  const key     = createCacheKey(url)
   const headers = await getJSONFromCache(cache, `${key}:headers`)
 
   if (headers) {
@@ -61,18 +61,10 @@ app.get('/images/:signature/:url', async (req, res) => {
   res.status(r.status).set(newHeaders).send(body2)
 })
 
-app.listen(process.env.PORT || 3000)
-
-function verify(url, signature) {
-  const digest = crypto.createHmac('sha224', process.env.HMAC_SECRET).update(url).digest('utf8')
-
-  return digest === base64url.decode(signature)
-}
+export default app
 
 async function getJSONFromCache(cache, key) {
   const {value: buf} = await cache.get(key)
 
-  if (!buf) { return null }
-
-  return JSON.parse(buf.toString())
+  return buf ? JSON.parse(buf.toString()) : null
 }
