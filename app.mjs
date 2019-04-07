@@ -17,7 +17,11 @@ logger.token('status', (req, res) => {
 const app   = express()
 const cache = memjs.Client.create()
 
-app.use(logger('dev'))
+app.use(logger('dev', {
+  skip() {
+    return process.env.NODE_ENV === 'test'
+  }
+}))
 
 app.get('/images/:signature/:url', async (req, res) => {
   const {url, signature} = req.params
