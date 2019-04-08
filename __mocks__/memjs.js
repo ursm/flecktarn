@@ -11,7 +11,7 @@ module.exports = {
         },
 
         async set(key, val) {
-          data.set(key, Buffer.isBuffer(val) ? val : new Buffer(val))
+          data.set(key, Buffer.from(val))
         }
       }
     }
