@@ -39,7 +39,6 @@ describe('GET /:signature/:url', () => {
     fetch.mockResolvedValue(new Response('BODY'))
 
     const res = await get(path)
-
     expect(res.statusCode).toBe(200)
     expect(res.body.toString()).toBe('BODY')
 
@@ -50,15 +49,13 @@ describe('GET /:signature/:url', () => {
   test('cache', async () => {
     fetch.mockResolvedValue(new Response('BODY'))
 
-    const res1 = await get(path)
+    const first = await get(path)
+    expect(first.statusCode).toBe(200)
 
-    expect(res1.statusCode).toBe(200)
-    expect(fetch).toHaveBeenCalledTimes(1)
+    const second = await get(path)
+    expect(second.statusCode).toBe(200)
+    expect(second.body.toString()).toBe('BODY')
 
-    const res2 = await get(path)
-
-    expect(res2.statusCode).toBe(200)
-    expect(res2.body.toString()).toBe('BODY')
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
@@ -72,27 +69,15 @@ describe('GET /:signature/:url', () => {
       })
     )
 
-    const res1 = await get(path)
+    const first = await get(path)
+    expect(first.statusCode).toBe(200)
 
-    expect(res1.statusCode).toBe(200)
-    expect(fetch).toHaveBeenCalledTimes(1)
+    const second = await get(path, {headers: {'If-Modified-Since': 'Sun, 01 Apr 2019 00:00:00 GMT'}})
+    expect(second.statusCode).toBe(304)
 
-    const res2 = await get(path, {
-      headers: {
-        'If-Modified-Since': 'Sun, 01 Apr 2019 00:00:00 GMT'
-      }
-    })
+    const third = await get(path, {headers: {'If-None-Match': 'ETAG'}})
+    expect(third.statusCode).toBe(304)
 
-    expect(res2.statusCode).toBe(304)
-    expect(fetch).toHaveBeenCalledTimes(1)
-
-    const res3 = await get(path, {
-      headers: {
-        'If-None-Match': 'ETAG'
-      }
-    })
-
-    expect(res3.statusCode).toBe(304)
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
