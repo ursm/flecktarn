@@ -14,8 +14,8 @@ jest.mock('node-fetch')
 app.set('hmac secret', 'SECRET')
 
 describe('GET /:signature/:url', () => {
-  async function get(url, opts = {}) {
-    let req = request(app).get(url)
+  async function get(path, opts = {}) {
+    let req = request(app).get(path)
 
     if (opts.headers) {
       for (const [k, v] of Object.entries(opts.headers)) {
@@ -26,39 +26,39 @@ describe('GET /:signature/:url', () => {
     return await req
   }
 
-  const imageUrl  = 'http://example.com/foo.png'
-  const signature = createSignature(imageUrl, 'SECRET')
-  const url       = `/${signature}/${querystring.escape(imageUrl)}`
+  const source    = 'http://example.com/foo.png'
+  const signature = createSignature(source, 'SECRET')
+  const path      = `/${signature}/${querystring.escape(source)}`
 
   beforeEach(() => {
-    fetch.mockReset()
+    fetch.mockClear()
     memjs.clear()
   })
 
   test('simple', async () => {
     fetch.mockResolvedValue(new Response('BODY'))
 
-    const res = await get(url)
+    const res = await get(path)
 
     expect(res.statusCode).toBe(200)
     expect(res.body.toString()).toBe('BODY')
 
-    expect(fetch).toHaveBeenCalledWith(imageUrl)
+    expect(fetch).toHaveBeenCalledTimes(1)
+    expect(fetch).toHaveBeenCalledWith(source)
   })
 
   test('cache', async () => {
     fetch.mockResolvedValue(new Response('BODY'))
 
-    const res1 = await get(url)
+    const res1 = await get(path)
 
     expect(res1.statusCode).toBe(200)
-    expect(res1.body.toString()).toBe('BODY')
+    expect(fetch).toHaveBeenCalledTimes(1)
 
-    const res2 = await get(url)
+    const res2 = await get(path)
 
     expect(res2.statusCode).toBe(200)
     expect(res2.body.toString()).toBe('BODY')
-
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
@@ -72,32 +72,32 @@ describe('GET /:signature/:url', () => {
       })
     )
 
-    const res1 = await get(url)
+    const res1 = await get(path)
 
     expect(res1.statusCode).toBe(200)
-    expect(res1.body.toString()).toBe('BODY')
+    expect(fetch).toHaveBeenCalledTimes(1)
 
-    const res2 = await get(url, {
+    const res2 = await get(path, {
       headers: {
         'If-Modified-Since': 'Sun, 01 Apr 2019 00:00:00 GMT'
       }
     })
 
     expect(res2.statusCode).toBe(304)
+    expect(fetch).toHaveBeenCalledTimes(1)
 
-    const res3 = await get(url, {
+    const res3 = await get(path, {
       headers: {
         'If-None-Match': 'ETAG'
       }
     })
 
     expect(res3.statusCode).toBe(304)
-
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
   test('signature is invalid', async () => {
-    const res = await get(`/INVALID/${querystring.escape(imageUrl)}`)
+    const res = await get(`/INVALID/${querystring.escape(source)}`)
 
     expect(res.statusCode).toBe(400)
     expect(fetch).not.toHaveBeenCalled()
