@@ -808,6 +808,18 @@
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.0.tgz#1eb8c033e98cf4e1a4cedcaf8bcafe8cb7591e85"
   integrity sha512-eAtOAFZefEnfJiRFQBGw1eYqa5GTLCZ1y86N0XSI/D6EB+E8z6VPV/UL7Gi5UEclFqoQk+6NRqEDsfmDLXn8sg==
 
+"@types/memjs@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@types/memjs/-/memjs-1.2.1.tgz#dc50ae4ae2571e77ba67b74180abf04e4eb2415a"
+  integrity sha512-HewjWEwkWYUhbACwqbBfrirVDEDWJodeb3+0vEITB92VDqlOH9EYH5g7B4iwKb7Yw02oqpBgWQ3dEQZE3SMx+Q==
+  dependencies:
+    "@types/node" "*"
+
+"@types/node@*":
+  version "13.7.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.7.0.tgz#b417deda18cf8400f278733499ad5547ed1abec4"
+  integrity sha512-GnZbirvmqZUzMgkFn70c74OQpTTUcCzlhQliTzYjQMqg+hVKcDnxdL19Ne3UdYzdMA/+W3eb646FWn/ZaT1NfQ==
+
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
