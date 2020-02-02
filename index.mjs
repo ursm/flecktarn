@@ -1,4 +1,4 @@
-import app from './app'
+import app from './app.mjs'
 
 app.set('hmac secret', process.env.HMAC_SECRET)
 

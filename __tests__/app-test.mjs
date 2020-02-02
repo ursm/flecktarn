@@ -3,8 +3,8 @@ import memjs from 'memjs'
 import querystring from 'querystring'
 import request from 'supertest'
 
-import app from '../app'
-import { createSignature } from '../util'
+import app from '../app.mjs'
+import { createSignature } from '../util.mjs'
 
 const {Response} = jest.requireActual('node-fetch')
 

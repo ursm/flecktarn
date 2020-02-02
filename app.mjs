@@ -4,7 +4,7 @@ import fetch from 'node-fetch'
 import logger from 'morgan'
 import memjs from 'memjs'
 
-import { createSignature } from './util'
+import { createSignature } from './util.mjs'
 
 const _status = logger.status
 
