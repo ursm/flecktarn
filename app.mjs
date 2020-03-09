@@ -50,7 +50,7 @@ app.get('/:signature/:url', async (req, res) => {
     const {value: body} = await cache.get(`${key}:body`)
 
     if (body) {
-      res.status(200).set('X-Cache', 'hit').set(headers).send(body)
+      res.set('X-Cache', 'hit').status(200).send(body)
       return
     }
   }

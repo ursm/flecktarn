@@ -36,11 +36,18 @@ describe('GET /:signature/:url', () => {
   })
 
   test('simple', async () => {
-    fetch.mockResolvedValue(new Response('BODY'))
+    fetch.mockResolvedValue(new Response('BODY', {
+      headers: {
+        'Content-Type': 'image/png'
+      }
+    }))
 
     const res = await get(path)
+
     expect(res.statusCode).toBe(200)
-    expect(res.text).toBe('BODY')
+    expect(res.headers['content-type']).toBe('image/png')
+    expect(res.headers['x-cache']).toBe('miss')
+    expect(res.body.toString()).toBe('BODY')
 
     expect(fetch).toHaveBeenCalledTimes(1)
     expect(fetch).toHaveBeenCalledWith(source)
@@ -50,11 +57,15 @@ describe('GET /:signature/:url', () => {
     fetch.mockResolvedValue(new Response('BODY'))
 
     const first = await get(path)
+
     expect(first.statusCode).toBe(200)
+    expect(first.headers['x-cache']).toBe('miss')
 
     const second = await get(path)
+
     expect(second.statusCode).toBe(200)
     expect(second.text).toBe('BODY')
+    expect(second.headers['x-cache']).toBe('hit')
 
     expect(fetch).toHaveBeenCalledTimes(1)
   })
@@ -70,13 +81,17 @@ describe('GET /:signature/:url', () => {
     )
 
     const first = await get(path)
+
     expect(first.statusCode).toBe(200)
+    expect(first.headers['x-cache']).toBe('miss')
 
     const second = await get(path, {headers: {'If-Modified-Since': 'Sun, 01 Apr 2019 00:00:00 GMT'}})
     expect(second.statusCode).toBe(304)
+    expect(second.headers['x-cache']).toBe('hit')
 
     const third = await get(path, {headers: {'If-None-Match': 'ETAG'}})
     expect(third.statusCode).toBe(304)
+    expect(third.headers['x-cache']).toBe('hit')
 
     expect(fetch).toHaveBeenCalledTimes(1)
   })
