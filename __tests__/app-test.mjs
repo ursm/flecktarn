@@ -40,7 +40,7 @@ describe('GET /:signature/:url', () => {
 
     const res = await get(path)
     expect(res.statusCode).toBe(200)
-    expect(res.body.toString()).toBe('BODY')
+    expect(res.text).toBe('BODY')
 
     expect(fetch).toHaveBeenCalledTimes(1)
     expect(fetch).toHaveBeenCalledWith(source)
@@ -54,7 +54,7 @@ describe('GET /:signature/:url', () => {
 
     const second = await get(path)
     expect(second.statusCode).toBe(200)
-    expect(second.body.toString()).toBe('BODY')
+    expect(second.text).toBe('BODY')
 
     expect(fetch).toHaveBeenCalledTimes(1)
   })
