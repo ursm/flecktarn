@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test": "jest"
+    "test": "jest && eslint ."
   },
   "dependencies": {
     "base64url": "^3.0.1",
@@ -19,6 +19,7 @@
     "@babel/preset-env": "^7.8.7",
     "@types/memjs": "^1.2.1",
     "babel-jest": "^25.1.0",
+    "eslint": "^6.8.0",
     "jest": "^25.1.0",
     "supertest": "^4.0.2"
   }
