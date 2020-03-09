@@ -1,8 +1,8 @@
-import crypto from 'crypto'
 import express from 'express'
 import fetch from 'node-fetch'
 import logger from 'morgan'
 import memjs from 'memjs'
+import { createHash, timingSafeEqual } from 'crypto'
 
 import { createSignature } from './util.mjs'
 
@@ -25,14 +25,16 @@ app.use(logger('dev', {
 }))
 
 app.get('/:signature/:url', async (req, res) => {
-  const {url, signature} = req.params
+  const {url, signature}        = req.params
+  const expectedSignatureDigest = digest(createSignature(url, app.get('hmac secret')))
+  const actualSignatureDigest   = digest(signature)
 
-  if (createSignature(url, app.get('hmac secret')) !== signature) {
+  if (!timingSafeEqual(expectedSignatureDigest, actualSignatureDigest)) {
     res.sendStatus(400)
     return
   }
 
-  const key     = crypto.createHash('md5').update(url).digest('base64')
+  const key     = createHash('md5').update(url).digest('base64')
   const headers = await getJSONFromCache(cache, `${key}:headers`)
 
   if (headers) {
@@ -84,4 +86,8 @@ async function getJSONFromCache(cache, key) {
   const {value: buf} = await cache.get(key)
 
   return buf ? JSON.parse(buf.toString()) : null
+}
+
+function digest(str) {
+  return createHash('sha512').update(str).digest()
 }
