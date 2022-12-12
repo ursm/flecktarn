@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "base64url": "^3.0.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "memjs": "^1.2.2",
     "morgan": "^1.9.1",
     "node-fetch": "2.6.0"
